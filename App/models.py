@@ -20,6 +20,11 @@ class Artical(db.Model):
     class_id=db.Column(db.Integer, db.ForeignKey(Classfy.class_id))
     clsfy=db.relationship('Classfy', backref='articals',lazy=True)
 
+class Login(db.Model):
+    login_times = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ip = db.Column(db.String(20))
+    login_time = db.Column(db.DateTime())
+
 
 
 

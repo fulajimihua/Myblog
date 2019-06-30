@@ -1,4 +1,9 @@
+import random
+from datetime import datetime
+
 from flask import Blueprint, render_template, request, redirect, url_for, session
+from sqlalchemy import desc
+
 from App.models import *
 
 blue = Blueprint('blog', __name__)
@@ -49,9 +54,19 @@ def index2(c):
 @blue.route('/search/', methods = ['post'])
 def search():
     keyword = request.form.get('keyword')
-    if Artical.query.filter(Artical.artical_keywords == keyword).count():
-        res = redirect(url_for('blog.info',a = Artical.query.filter(Artical.artical_keywords == keyword).first().artical_id))
-        return res
+    if Artical.query.filter(Artical.artical_keywords.contains(keyword)).count():
+        articals = Artical.query.filter(Artical.artical_keywords.contains(keyword)).all()
+        classfys = Classfy.query.all()
+        for classfy in classfys:
+            classfy.length = len(classfy.articals)
+        a = random.randrange(1,20)
+        for artical in articals:
+            artical.num = a
+            if a <= 20:
+                a += 2
+            else:
+                a = 1
+        return render_template('home/index.html', classfys=classfys, articals=articals)
     else:
         classfys = Classfy.query.all()
         articals = Artical.query.all()
@@ -74,14 +89,29 @@ def info(a):
         classfy.length=len(classfy.articals)
     return render_template('home/info.html',artical=artical,classfys=classfys)
 # 后台
+ip = 0
 @blue.route('/admin/login/',methods=['post','get'])
 def admin_login():
     if request.method == "GET":
         return render_template('admin/login.html')
     else:
         if request.form.get('username') == 'admin' and request.form.get('userpwd') == '12345678':
-            res = redirect(url_for('blog.admin'))
+            login_times = Login.query.order_by(desc('login_times')).first().login_times
+            login_time = Login.query.order_by(desc('login_times')).first().login_time
+
+            global ip
+            ip = Login.query.order_by(desc('login_times')).first().ip
+            ip_now =request.remote_addr
+            articles_num = Artical.query.count()+1
+            res = render_template('admin/index.html',articles_num=articles_num, login_times=login_times ,ip=ip, ip_now=ip_now, login_time=login_time)
             session['username'] = request.form.get('username')
+            login = Login()
+            login.ip = request.remote_addr
+            now = datetime.now()
+            login.login_time = now.strftime('%Y-%m-%d %H:%M:%S')
+
+            db.session.add(login)
+            db.session.commit()
             return res
         else:
             return redirect(url_for('blog.admin_login'))
@@ -91,7 +121,9 @@ def admin():
     # if request.cookies.get('session') == session['username']:
     if session.get('username',''):
         articles_num = Artical.query.count()
-        return render_template('admin/index.html',articles_num=articles_num)
+        login_times = Login.query.order_by(desc('login_times')).first().login_times
+        ip_now = request.remote_addr
+        return render_template('admin/index.html',articles_num=articles_num, login_times=login_times ,ip=ip, ip_now=ip_now)
     else:
         return redirect(url_for('blog.admin_login'))
 

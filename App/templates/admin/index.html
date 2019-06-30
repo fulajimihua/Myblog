@@ -116,10 +116,10 @@
         <table class="table table-striped table-hover">
           <tbody>
             <tr>
-              <td>登录者: <span>admin</span>，这是您第 <span>13</span> 次登录</td>
+              <td>登录者: <span>admin</span>，这是您第 <span>{{ login_times }}</span> 次登录</td>
             </tr>
             <tr>
-              <td>上次登录时间: 2016-01-08 15:50:28 , 上次登录IP: ::1:55570</td>
+              <td>上次登录时间: {{ login_time }} , 上次登录IP: {{ ip }}</td>
             </tr>
           </tbody>
         </table>
@@ -151,7 +151,7 @@
             </tr>
             <tr>
               <td>登录者IP:</td>
-              <td>::1:55570</td>
+              <td>{{ ip_now }}</td>
               <td>MYSQL版本:</td>
               <td>5.5.40</td>
             </tr>
