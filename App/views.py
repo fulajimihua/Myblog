@@ -22,6 +22,13 @@ def index():
     articals = Artical.query.all()
     for classfy in classfys:
         classfy.length=len(classfy.articals)
+    a = 1
+    for artical in articals:
+        artical.num = a
+        if a <= 21:
+            a += 1
+        else:
+            a = 1
     return render_template('home/index.html',classfys=classfys,articals=articals)
 
 @blue.route('/index/<c>/')
@@ -30,8 +37,35 @@ def index2(c):
     articals = Classfy.query.get(c).articals
     for classfy in classfys:
         classfy.length=len(classfy.articals)
+    a = int(c)
+    for artical in articals:
+        artical.num = a
+        if a <= 20:
+            a += 2
+        else:
+            a =1
     return render_template('home/index.html', classfys=classfys, articals=articals)
 
+@blue.route('/search/', methods = ['post'])
+def search():
+    keyword = request.form.get('keyword')
+    if Artical.query.filter(Artical.artical_keywords == keyword).count():
+        res = redirect(url_for('blog.info',a = Artical.query.filter(Artical.artical_keywords == keyword).first().artical_id))
+        return res
+    else:
+        classfys = Classfy.query.all()
+        articals = Artical.query.all()
+        for classfy in classfys:
+            classfy.length = len(classfy.articals)
+        a = 1
+        for artical in articals:
+            artical.num = a
+            if a <= 21:
+                a += 1
+            else:
+                a = 1
+        error = '您查找的关键字不存在'
+        return render_template('home/index.html', classfys=classfys, articals=articals, error = error)
 @blue.route('/info/<a>/')
 def info(a):
     artical = Artical.query.get(a)

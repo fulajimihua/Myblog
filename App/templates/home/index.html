@@ -20,7 +20,7 @@
   <nav><div class="logo"><a href="/">侯宏伟个人博客</a></div>
     <h2 id="mnavh"><span class="navicon"></span></h2>
     <ul id="starlist">
-      <li><a href="index.html">网站首页</a></li>
+      <li><a href="{{ url_for('blog.index') }}">网站首页</a></li>
       <li><a href="share.html">我的相册</a></li>
       <li><a href="list.html">我的日记</a></li>
       <li><a href="about.html">关于我</a></li>
@@ -35,7 +35,7 @@
       <div class="about_me">
         <h2>关于我</h2>
         <ul>
-          <i><img src="/static/home/images/4.jpg"></i>
+          <i><img src="/static/home/images/1.jpg"></i>
           <p><b>侯宏伟</b>，一个站在世界顶端的男人，专注于敲代码，潜心研究证券交易，坚信终有一天可以实现财富自由</p>
         </ul>
       </div>
@@ -51,12 +51,15 @@
         </ul>
       </div>
       <div class="search">
-        <form action="" method="post" name="searchform" id="searchform">
-          <input name="keyboard" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
-          <input name="show" value="title" type="hidden">
-          <input name="tempid" value="1" type="hidden">
-          <input name="tbname" value="news" type="hidden">
+        <form action="{{ url_for('blog.search') }}" method="post" name="searchform" id="searchform">
+          <input name="keyword" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
+{#          <input name="show" value="title" type="hidden">#}
+{#          <input name="tempid" value="1" type="hidden">#}
+{#          <input name="tbname" value="news" type="hidden">#}
           <input name="Submit" class="input_submit" value="搜索" type="submit">
+            {% if error %}
+                <div style="color:red">{{ error }}</div>
+            {% endif %}
         </form>
       </div>
       <div class="fenlei">
@@ -95,7 +98,7 @@
   </aside>
   <main class="r_box">
       {% for artical in articals %}
-          <li><i><a href="/info/{{ artical.artical_id }}/"><img src="/static/home/images/1.jpg"></a></i>
+          <li><i><a href="/info/{{ artical.artical_id }}/"><img src="/static/home/images/{{ artical.num }}.jpg"></a></i>
       <h3><a href="/info/{{ artical.artical_id }}/">{{ artical.artical_title }}</a></h3>
       <p>{{ artical.artical_content|striptags }}</p>
     </li>
