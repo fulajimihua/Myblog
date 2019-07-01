@@ -98,12 +98,13 @@ def admin_login():
         if request.form.get('username') == 'admin' and request.form.get('userpwd') == '12345678':
             login_times = Login.query.order_by(desc('login_times')).first().login_times
             login_time = Login.query.order_by(desc('login_times')).first().login_time
-
+            now = datetime.now()
+            now_time = now.strftime('%Y-%m-%d %H:%M:%S')
             global ip
             ip = Login.query.order_by(desc('login_times')).first().ip
             ip_now =request.remote_addr
             articles_num = Artical.query.count()+1
-            res = render_template('admin/index.html',articles_num=articles_num, login_times=login_times ,ip=ip, ip_now=ip_now, login_time=login_time)
+            res = render_template('admin/index.html',articles_num=articles_num, login_times=login_times ,ip=ip, ip_now=ip_now, login_time=login_time, now_time=now_time)
             session['username'] = request.form.get('username')
             login = Login()
             login.ip = request.remote_addr
@@ -123,7 +124,9 @@ def admin():
         articles_num = Artical.query.count()
         login_times = Login.query.order_by(desc('login_times')).first().login_times
         ip_now = request.remote_addr
-        return render_template('admin/index.html',articles_num=articles_num, login_times=login_times ,ip=ip, ip_now=ip_now)
+        now = datetime.now()
+        now_time = now.strftime('%Y-%m-%d %H:%M:%S')
+        return render_template('admin/index.html',articles_num=articles_num, login_times=login_times ,ip=ip, ip_now=ip_now, now_time=now_time)
     else:
         return redirect(url_for('blog.admin_login'))
 
